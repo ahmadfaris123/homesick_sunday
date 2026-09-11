@@ -1,0 +1,57 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: homesick_app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-1929}:80"
+    env_file:
+      - .env
+    environment:
+      APP_PORT: ${APP_PORT:-1929}
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-dashboard_tempates}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-12345}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - app_storage:/var/www/html/storage
+    networks:
+      - homesick_net
+
+  db:
+    image: postgres:17-alpine
+    container_name: homesick_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-dashboard_tempates}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-12345}
+    ports:
+      - "${DB_PORT_FORWARD:-5429}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_DATABASE:-dashboard_tempates}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    networks:
+      - homesick_net
+
+networks:
+  homesick_net:
+    driver: bridge
+
+volumes:
+  pgdata:
+    driver: local
+  app_storage:
+    driver: local
