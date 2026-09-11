@@ -1,27 +1,5 @@
 # ==============================================================================
-# Stage 1: Frontend Builder (React / Vite Assets)
-# ==============================================================================
-FROM node:22-alpine AS frontend-builder
-WORKDIR /app
-
-# Copy dependency specifications
-COPY package.json package-lock.json* ./
-
-# Install dependencies (respecting ARM64 platform binaries)
-RUN npm ci --prefer-offline --no-audit
-
-# Copy application source needed for Vite build
-COPY resources ./resources
-COPY public ./public
-COPY vite.config.ts tsconfig.json components.json ./
-COPY routes ./routes
-COPY app ./app
-
-# Build production assets to public/build
-RUN npm run build
-
-# ==============================================================================
-# Stage 2: Composer Vendor Builder
+# Stage 1: Composer Vendor Builder
 # ==============================================================================
 FROM composer:2 AS vendor-builder
 WORKDIR /app
@@ -38,14 +16,14 @@ COPY . .
 RUN composer dump-autoload --optimize --no-dev
 
 # ==============================================================================
-# Stage 3: Production Runtime (PHP 8.4-FPM + Nginx on Alpine)
+# Stage 2: Runtime Container (PHP 8.4-FPM + Nginx + Node.js/NPM on Alpine)
 # ==============================================================================
 FROM php:8.4-fpm-alpine AS runtime
 
 LABEL maintainer="Homesick Sunday Team"
-LABEL description="Laravel 12 Production Container for ARM64 / Multi-arch"
+LABEL description="Laravel 12 Production Container with Node.js for ARM64 / Multi-arch"
 
-# Install system dependencies & PostgreSQL runtime libraries
+# Install system dependencies, PostgreSQL runtime libraries, Node.js & NPM
 RUN set -xe \
     && apk update \
     && apk add --no-cache \
@@ -53,6 +31,8 @@ RUN set -xe \
         supervisor \
         bash \
         curl \
+        nodejs \
+        npm \
         libpq \
         postgresql-client \
         libzip \
@@ -83,7 +63,7 @@ RUN set -xe \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/*
 
-# Copy custom PHP configuration
+# Custom PHP configuration
 RUN { \
         echo "memory_limit = 256M"; \
         echo "upload_max_filesize = 64M"; \
@@ -107,8 +87,9 @@ COPY . /var/www/html
 # Copy built vendor from composer stage
 COPY --from=vendor-builder /app/vendor /var/www/html/vendor
 
-# Copy built frontend assets from node stage
-COPY --from=frontend-builder /app/public/build /var/www/html/public/build
+# Install NPM dependencies inside container (ARM64 compatible)
+# Ini memastikan paket node_modules siap sehingga Anda bisa menjalankan `npm run build` kapan saja via docker exec
+RUN npm ci --prefer-offline --no-audit || npm install
 
 # Copy configuration files
 COPY docker/nginx.conf /etc/nginx/nginx.conf

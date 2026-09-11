@@ -49,8 +49,8 @@ fi
 echo -e "${BLUE}[INFO] Port Aplikasi: ${APP_PORT}${NC}"
 echo -e "${BLUE}[INFO] Port Database Host: ${DB_PORT_FORWARD}${NC}"
 
-# 3. Build dan jalankan container
-echo -e "\n${YELLOW}[1/5] Membangun dan menjalankan container Docker...${NC}"
+# 3. Build dan jalankan container (Tanpa kompilasi frontend npm di host)
+echo -e "\n${YELLOW}[1/5] Menjalankan container Docker...${NC}"
 docker compose up -d --build
 
 # 4. Menunggu PostgreSQL siap
@@ -100,15 +100,18 @@ docker compose exec -T app php artisan storage:link || true
 docker compose exec -T app php artisan optimize:clear
 
 echo -e "\n${GREEN}======================================================${NC}"
-echo -e "${GREEN}   SELESAI! Aplikasi berhasil dijalankan di Docker!   ${NC}"
+echo -e "${GREEN}   SELESAI! Container & Database Berhasil Berjalan!   ${NC}"
 echo -e "${GREEN}======================================================${NC}"
 echo -e "Aplikasi Web: ${CYAN}http://localhost:${APP_PORT}${NC}"
 echo -e "PostgreSQL:   ${CYAN}localhost:${DB_PORT_FORWARD}${NC} (Database: dashboard_tempates, User: postgres)"
 echo -e "\nAkun Default Seeder:"
 echo -e "  - Email:    ${CYAN}test@example.com${NC}"
 echo -e "  - Password: ${CYAN}password${NC}"
+echo -e "\nKompilasi Frontend (Jalankan manual kapan saja):"
+echo -e "  - Build assets:     ${YELLOW}docker compose exec -it app npm run build${NC}"
+echo -e "  - Masuk ke shell:   ${YELLOW}docker compose exec -it app sh${NC}"
 echo -e "\nPerintah Berguna:"
-echo -e "  - Cek log aplikasi:  ${YELLOW}docker compose logs -f app${NC}"
-echo -e "  - Cek log database:  ${YELLOW}docker compose logs -f db${NC}"
-echo -e "  - Hentikan docker:   ${YELLOW}docker compose down${NC}"
+echo -e "  - Cek log aplikasi: ${YELLOW}docker compose logs -f app${NC}"
+echo -e "  - Cek log database: ${YELLOW}docker compose logs -f db${NC}"
+echo -e "  - Hentikan docker:  ${YELLOW}docker compose down${NC}"
 echo -e "======================================================\n"
