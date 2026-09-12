@@ -7,8 +7,8 @@ use App\Http\Controllers\OriginalController;
 use App\Http\Controllers\PersonelController;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'landing_backup')->name('home');
-Route::inertia('/landing_2', 'landing')->name('landing-2');
+Route::inertia('/', 'landing_2')->name('home');
+Route::inertia('/landing_2', 'landing_backup')->name('landing-2');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
