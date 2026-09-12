@@ -22,10 +22,11 @@ class StoreOriginalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
-            'judul'        => ['required', 'string', 'max:255'],
-            'link_spotify' => ['nullable', 'string', 'max:500'],
-            'active'       => ['nullable', 'boolean'],
+            'image'            => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'judul'            => ['required', 'string', 'max:255'],
+            'link_spotify'     => ['nullable', 'string', 'max:500'],
+            'link_apple_music' => ['nullable', 'string', 'max:500'],
+            'active'           => ['nullable', 'boolean'],
         ];
     }
 
@@ -37,10 +38,11 @@ class StoreOriginalRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'image'        => 'Thumbnail',
-            'judul'        => 'Judul Lagu',
-            'link_spotify' => 'Link Spotify',
-            'active'       => 'Status Aktif',
+            'image'            => 'Thumbnail',
+            'judul'            => 'Judul Lagu',
+            'link_spotify'     => 'Link Spotify',
+            'link_apple_music' => 'Link Apple Music',
+            'active'           => 'Status Aktif',
         ];
     }
 }

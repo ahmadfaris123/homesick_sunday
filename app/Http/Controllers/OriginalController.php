@@ -19,12 +19,13 @@ class OriginalController extends Controller
     public function index(): Response
     {
         $originals = Original::latest()->get()->map(fn ($o) => [
-            'id'           => $o->id,
-            'image_url'    => $o->image_url,
-            'judul'        => $o->judul,
-            'link_spotify' => $o->link_spotify,
-            'active'       => $o->active,
-            'created_at'   => $o->created_at,
+            'id'               => $o->id,
+            'image_url'        => $o->image_url,
+            'judul'            => $o->judul,
+            'link_spotify'     => $o->link_spotify,
+            'link_apple_music' => $o->link_apple_music,
+            'active'           => $o->active,
+            'created_at'       => $o->created_at,
         ]);
 
         return Inertia::render('originals', [

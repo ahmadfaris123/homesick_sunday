@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null $image
  * @property string $judul
  * @property string|null $link_spotify
+ * @property string|null $link_apple_music
  * @property bool $active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -22,6 +23,7 @@ class Original extends Model
         'image',
         'judul',
         'link_spotify',
+        'link_apple_music',
         'active',
     ];
 

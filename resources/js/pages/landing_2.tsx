@@ -31,6 +31,22 @@ function TikTokIcon({ className }: { className?: string }) {
     );
 }
 
+function SpotifyIcon({ className }: { className?: string }) {
+    return (
+        <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.899 4.62-1.02 8.52-.6 11.64 1.32.42.18.479.659.301 1.019zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.72 1.62.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3z"/>
+        </svg>
+    );
+}
+
+function AppleMusicIcon({ className }: { className?: string }) {
+    return (
+        <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.07c.6-0.74 1.01-1.76.9-2.78-.87.04-1.92.58-2.54 1.31-.55.63-1.03 1.66-.9 2.67.97.08 1.96-.48 2.54-1.2z" />
+        </svg>
+    );
+}
+
 type SharedProps = {
     appSettings?: {
         app_name: string;
@@ -78,7 +94,9 @@ type SharedProps = {
         id: number;
         judul: string;
         image_url: string | null;
+        spotify_artwork_url?: string | null;
         link_spotify: string | null;
+        link_apple_music: string | null;
     }[];
 };
 
@@ -229,6 +247,42 @@ export default function LandingPage() {
     const [originalsTouchStartX, setOriginalsTouchStartX] = useState<number | null>(null);
     const [originalsTouchEndX, setOriginalsTouchEndX] = useState<number | null>(null);
 
+    // Spotify Artwork auto-resolution & client cache
+    const [spotifyArtworks, setSpotifyArtworks] = useState<Record<number, string>>(() => {
+        const initial: Record<number, string> = {};
+        if (originals) {
+            originals.forEach((track) => {
+                if (track.spotify_artwork_url) {
+                    initial[track.id] = track.spotify_artwork_url;
+                }
+            });
+        }
+        return initial;
+    });
+
+    useEffect(() => {
+        if (!originals) return;
+        originals.forEach((track) => {
+            if (!track.link_spotify || spotifyArtworks[track.id]) return;
+            fetch(`https://open.spotify.com/oembed?url=${encodeURIComponent(track.link_spotify)}`)
+                .then((res) => (res.ok ? res.json() : null))
+                .then((data) => {
+                    if (data?.thumbnail_url) {
+                        const highRes = data.thumbnail_url.replace('ab67616d00001e02', 'ab67616d0000b273');
+                        setSpotifyArtworks((prev) => ({ ...prev, [track.id]: highRes }));
+                    }
+                })
+                .catch(() => {});
+        });
+    }, [originals]);
+
+    const getTrackArtwork = (track?: { id: number; image_url: string | null; spotify_artwork_url?: string | null } | null) => {
+        if (!track) return null;
+        return spotifyArtworks[track.id] || track.spotify_artwork_url || track.image_url || null;
+    };
+
+    const latestCover = getTrackArtwork(latestOriginal);
+
     const handleOriginalsTouchEnd = () => {
         if (originalsTouchStartX === null || originalsTouchEndX === null) return;
         const distance = originalsTouchStartX - originalsTouchEndX;
@@ -254,13 +308,32 @@ export default function LandingPage() {
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 <link 
-                    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Permanent+Marker&family=Sedgwick+Ave&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" 
+                    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Montserrat:wght@700;800;900&family=Permanent+Marker&family=Sedgwick+Ave&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" 
                     rel="stylesheet" 
                 />
             </Head>
 
             {/* Custom Embedded Styles for Grunge Y2K Effects */}
             <style dangerouslySetInnerHTML={{ __html: `
+                @font-face {
+                    font-family: 'Grindy Brush';
+                    src: url('/assets/Grindy%20Brush.otf') format('opentype');
+                    font-display: swap;
+                }
+                .font-grindy {
+                    font-family: 'Grindy Brush', cursive, sans-serif;
+                }
+                @font-face {
+                    font-family: 'Airone';
+                    src: url('/assets/AironeFont-Demo.otf') format('opentype');
+                    font-display: swap;
+                }
+                .font-airone {
+                    font-family: 'Airone', cursive, sans-serif;
+                }
+                .font-montserrat {
+                    font-family: 'Montserrat', sans-serif;
+                }
                 .font-marker {
                     font-family: 'Permanent Marker', 'Grindy Brush', cursive, sans-serif;
                 }
@@ -424,10 +497,10 @@ export default function LandingPage() {
                             className="flex items-center justify-center gap-3 group cursor-pointer text-center"
                         >
                             <div className="relative text-center">
-                                <span className="font-marker text-3xl sm:text-4xl text-[#ffea00] tracking-widest drop-shadow-[2px_2px_0px_#ffffff] transition-transform group-hover:scale-105 inline-block mr-3 sm:mr-4">
+                                <span className="font-grindy text-3xl sm:text-4xl tracking-wider text-[#ff0055] drop-shadow-[2px_2px_0px_#ffea00] transition-transform group-hover:scale-105 inline-block mr-3 sm:mr-4">
                                     Homesick
                                 </span>
-                                <span className="font-marker text-3xl sm:text-4xl text-[#ff0055] tracking-widest drop-shadow-[2px_2px_0px_#ffea00] transition-transform group-hover:scale-105 inline-block">
+                                <span className="font-grindy text-3xl sm:text-4xl tracking-wider text-[#ff0055] drop-shadow-[2px_2px_0px_#ffea00] transition-transform group-hover:scale-105 inline-block">
                                     Sunday
                                 </span>
                             </div>
@@ -533,11 +606,11 @@ export default function LandingPage() {
                                 
                                 {/* Main Title from table */}
                                 {activeSlides[currentSlide]?.title ? (
-                                    <h1 className="font-marker text-5xl sm:text-7xl lg:text-9xl text-white tracking-tight leading-[0.9] uppercase drop-shadow-[5px_5px_0px_#ff0055]">
+                                    <h1 className="font-grindy text-5xl sm:text-7xl lg:text-9xl tracking-tight leading-[0.9] uppercase text-[#ff0055] drop-shadow-[4px_4px_0px_#ffea00]">
                                         {activeSlides[currentSlide].title}
                                     </h1>
                                 ) : (
-                                    <h1 className="font-marker text-5xl sm:text-7xl lg:text-9xl text-white tracking-tight leading-[0.9] uppercase drop-shadow-[5px_5px_0px_#ff0055]">
+                                    <h1 className="font-grindy text-5xl sm:text-7xl lg:text-9xl tracking-tight leading-[0.9] uppercase text-[#ff0055] drop-shadow-[4px_4px_0px_#ffea00]">
                                         {appSettings?.app_name || 'HOMESICK SUNDAY'}
                                     </h1>
                                 )}
@@ -557,7 +630,7 @@ export default function LandingPage() {
                                             e.preventDefault();
                                             scrollTo('subscribe');
                                         }}
-                                        className="inline-flex items-center gap-2.5 bg-[#ff0055] hover:bg-[#ffea00] text-white hover:text-black font-marker text-lg sm:text-xl px-7 py-3 shadow-[4px_4px_0px_#fff] hover:shadow-[6px_6px_0px_#ffea00] transition-all -rotate-1 hover:rotate-0 cursor-pointer"
+                                        className="inline-flex items-center gap-2.5 bg-[#ff0055] hover:bg-[#ffea00] text-white hover:text-black font-marker text-lg sm:text-xl px-7 py-3 shadow-[4px_4px_0px_#ffea00] hover:shadow-[6px_6px_0px_#ffea00] transition-all -rotate-1 hover:rotate-0 cursor-pointer"
                                     >
                                         <Music2 className="w-5 h-5" />
                                         <span>LISTEN NOW</span>
@@ -663,7 +736,7 @@ export default function LandingPage() {
                                     </div>
 
                                     <div className="space-y-4">
-                                        <h2 className="text-4xl sm:text-6xl font-black tracking-tight leading-none uppercase">
+                                        <h2 className="font-airone text-4xl sm:text-6xl tracking-tight leading-none uppercase">
                                             {aboutSection?.title || 'About Us'}
                                         </h2>
                                         {aboutSection?.description && (
@@ -690,12 +763,9 @@ export default function LandingPage() {
                                     
                                     {/* Giant Overlapping Pink Brush Font Background */}
                                     <div className="relative w-full select-none text-center">
-                                        <h1 className="font-marker text-[18vw] sm:text-[140px] md:text-[170px] lg:text-[185px] leading-none text-[#ff0055] tracking-tighter drop-shadow-[5px_5px_0px_#000] scale-y-110 opacity-95 transition-transform">
+                                        <h1 className="font-grindy text-[18vw] sm:text-[140px] md:text-[170px] lg:text-[185px] leading-none tracking-tighter text-[#ff0055] drop-shadow-[4px_4px_0px_#ffea00] scale-y-110 opacity-95 transition-transform">
                                             Homesick
                                         </h1>
-                                        <div className="font-marker text-[18vw] sm:text-[140px] md:text-[170px] lg:text-[185px] leading-none text-stroke-white tracking-tighter absolute inset-0 -top-2 left-1 opacity-40 pointer-events-none">
-                                            Homesick
-                                        </div>
                                     </div>
 
                                     {/* Collage Container: Portrait with Jagged Torn Paper Frame & Sticker Ornaments */}
@@ -817,11 +887,11 @@ export default function LandingPage() {
 
                                     {/* Title with Brush font + Out now */}
                                     <div className="space-y-2">
-                                        <h2 className="font-marker text-5xl sm:text-7xl lg:text-8xl xl:text-9xl text-white tracking-tight leading-[0.9] drop-shadow-[5px_5px_0px_#000] uppercase">
+                                        <h2 className="font-grindy text-5xl sm:text-7xl lg:text-8xl xl:text-9xl text-white tracking-tight leading-[0.9] drop-shadow-[5px_5px_0px_#000] uppercase">
                                             {latestOriginal?.judul || newAlbum?.title || 'Merayakan Luka'}
                                         </h2>
                                         <div className="flex items-center gap-3 pt-2">
-                                            <span className="font-marker text-2xl sm:text-4xl text-[#ff0055] -rotate-2 inline-block drop-shadow-[2px_2px_0px_#000]">
+                                            <span className="font-grindy text-2xl sm:text-4xl text-[#ff0055] -rotate-2 inline-block drop-shadow-[2px_2px_0px_#000]">
                                                 IS OUT NOW!
                                             </span>
                                             <span className="text-[#a3a3a3] font-mono-raw text-xs sm:text-sm tracking-widest uppercase">
@@ -844,7 +914,7 @@ export default function LandingPage() {
                                                 rel="noopener noreferrer"
                                                 className="bg-[#1DB954] hover:bg-[#1ed760] text-black font-mono-raw font-black text-sm px-6 py-3.5 uppercase shadow-[4px_4px_0px_#ff0055] hover:shadow-[6px_6px_0px_#ffea00] transition-all inline-flex items-center gap-2.5 -rotate-1 hover:rotate-0"
                                             >
-                                                <Music2 className="w-5 h-5 fill-black" />
+                                                <SpotifyIcon className="w-5 h-5 fill-black" />
                                                 <span>LISTEN ON SPOTIFY</span>
                                                 <ArrowUpRight className="w-4 h-4 stroke-[3]" />
                                             </a>
@@ -855,7 +925,7 @@ export default function LandingPage() {
                                                 rel="noopener noreferrer"
                                                 className="bg-[#1DB954] hover:bg-[#1ed760] text-black font-mono-raw font-black text-sm px-6 py-3.5 uppercase shadow-[4px_4px_0px_#ff0055] hover:shadow-[6px_6px_0px_#ffea00] transition-all inline-flex items-center gap-2.5 -rotate-1 hover:rotate-0"
                                             >
-                                                <Music2 className="w-5 h-5 fill-black" />
+                                                <SpotifyIcon className="w-5 h-5 fill-black" />
                                                 <span>SPOTIFY</span>
                                                 <ArrowUpRight className="w-4 h-4 stroke-[3]" />
                                             </a>
@@ -870,17 +940,29 @@ export default function LandingPage() {
                                             </a>
                                         )}
 
-                                        {appSettings?.apple_music_url && (
+                                        {latestOriginal?.link_apple_music ? (
+                                            <a
+                                                href={latestOriginal.link_apple_music}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="bg-[#fa233b] hover:bg-[#fc3c44] text-white font-mono-raw font-black text-sm px-6 py-3.5 uppercase shadow-[4px_4px_0px_#000] hover:shadow-[6px_6px_0px_#ffea00] transition-all inline-flex items-center gap-2.5 rotate-1 hover:rotate-0"
+                                            >
+                                                <AppleMusicIcon className="w-5 h-5 fill-white" />
+                                                <span>LISTEN ON APPLE MUSIC</span>
+                                                <ArrowUpRight className="w-4 h-4 stroke-[3]" />
+                                            </a>
+                                        ) : appSettings?.apple_music_url ? (
                                             <a
                                                 href={appSettings.apple_music_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="bg-black text-white border-2 border-white/30 hover:border-white font-mono-raw font-bold text-sm px-6 py-3.5 uppercase shadow-[4px_4px_0px_rgba(255,255,255,0.15)] transition-all inline-flex items-center gap-2.5 rotate-1 hover:rotate-0"
+                                                className="bg-[#fa233b] hover:bg-[#fc3c44] text-white font-mono-raw font-black text-sm px-6 py-3.5 uppercase shadow-[4px_4px_0px_#000] hover:shadow-[6px_6px_0px_#ffea00] transition-all inline-flex items-center gap-2.5 rotate-1 hover:rotate-0"
                                             >
+                                                <AppleMusicIcon className="w-5 h-5 fill-white" />
                                                 <span>APPLE MUSIC</span>
-                                                <ArrowUpRight className="w-4 h-4 stroke-[2]" />
+                                                <ArrowUpRight className="w-4 h-4 stroke-[3]" />
                                             </a>
-                                        )}
+                                        ) : null}
                                     </div>
 
                                     {/* Sticker Badges Under Actions */}
@@ -910,9 +992,9 @@ export default function LandingPage() {
 
                                         {/* The Vinyl / Album Cover Frame */}
                                         <div className="relative w-full h-full bg-black border-2 border-white/20 shadow-2xl overflow-hidden group">
-                                            {latestOriginal?.image_url ? (
+                                            {latestCover ? (
                                                 <img
-                                                    src={latestOriginal.image_url}
+                                                    src={latestCover}
                                                     alt={latestOriginal?.judul || newAlbum?.title || 'Latest Release'}
                                                     className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 filter"
                                                 />
@@ -983,11 +1065,11 @@ export default function LandingPage() {
                                         <Radio className="w-3.5 h-3.5 fill-white" />
                                         <span>OFFICIAL TRANSMISSION // MUSIC VIDEO</span>
                                     </div>
-                                    <h2 className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 leading-none">
-                                        <span className="font-marker text-5xl sm:text-7xl lg:text-8xl text-[#ffea00] drop-shadow-[4px_4px_0px_#000]">
+                                    <h2 className="flex flex-col md:flex-row md:flex-nowrap items-center justify-center gap-2 sm:gap-3 lg:gap-4 leading-none">
+                                        <span className="font-grindy text-4xl sm:text-6xl lg:text-7xl xl:text-8xl text-[#ffea00] drop-shadow-[4px_4px_0px_#000] md:whitespace-nowrap">
                                             WATCH OUR
                                         </span>
-                                        <span className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight uppercase font-sans">
+                                        <span className="font-airone text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-white uppercase md:whitespace-nowrap">
                                             LATEST NOISE
                                         </span>
                                     </h2>
@@ -1101,10 +1183,10 @@ export default function LandingPage() {
                                     <span>MEET THE BAND // ROSTER</span>
                                 </div>
                                 <h2 className="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-4 leading-none">
-                                    <span className="font-marker text-5xl sm:text-7xl lg:text-8xl text-[#ff0055] drop-shadow-[4px_4px_0px_#000]">
+                                    <span className="font-grindy text-5xl sm:text-7xl lg:text-8xl text-[#ff0055] drop-shadow-[4px_4px_0px_#000]">
                                         OUR
                                     </span>
-                                    <span className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight uppercase font-sans">
+                                    <span className="font-airone text-5xl sm:text-7xl lg:text-8xl font-black text-white uppercase font-sans">
                                         PERSONEL
                                     </span>
                                 </h2>
@@ -1294,10 +1376,10 @@ export default function LandingPage() {
                                         <span>OUR DISCOGRAPHY // RELEASES</span>
                                     </div>
                                     <h2 className="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-4 leading-none">
-                                        <span className="font-marker text-5xl sm:text-7xl lg:text-8xl text-[#ff0055] drop-shadow-[4px_4px_0px_#000]">
+                                        <span className="font-grindy text-5xl sm:text-7xl lg:text-8xl text-[#ff0055] drop-shadow-[4px_4px_0px_#000]">
                                             ORIGINAL
                                         </span>
-                                        <span className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight uppercase font-sans">
+                                        <span className="font-airone text-5xl sm:text-7xl lg:text-8xl font-black text-white uppercase font-sans">
                                             TRACKS
                                         </span>
                                     </h2>
@@ -1390,9 +1472,9 @@ export default function LandingPage() {
 
                                                     {/* Cover Art Artwork Frame */}
                                                     <div className="relative aspect-square w-full overflow-hidden bg-neutral-900">
-                                                        {track.image_url ? (
+                                                        {getTrackArtwork(track) ? (
                                                             <img
-                                                                src={track.image_url}
+                                                                src={getTrackArtwork(track)!}
                                                                 alt={track.judul}
                                                                 className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 filter"
                                                             />
@@ -1429,25 +1511,42 @@ export default function LandingPage() {
                                                             </span>
                                                         </div>
 
-                                                        {/* Stream on Spotify Button */}
-                                                        {track.link_spotify ? (
-                                                            <a
-                                                                href={track.link_spotify}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="mt-4 bg-[#1DB954] hover:bg-[#1ed760] text-black font-mono-raw font-black text-xs px-4 py-3 uppercase shadow-[3px_3px_0px_#000] inline-flex items-center justify-between w-full transition-transform hover:-translate-y-0.5"
-                                                            >
-                                                                <span className="flex items-center gap-2">
-                                                                    <Music2 className="w-4 h-4 fill-black" />
-                                                                    <span>LISTEN ON SPOTIFY</span>
-                                                                </span>
-                                                                <ArrowUpRight className="w-4 h-4 stroke-[3]" />
-                                                            </a>
-                                                        ) : (
-                                                            <div className="mt-4 bg-white/10 text-[#a3a3a3] font-mono-raw text-xs px-4 py-2.5 uppercase text-center border border-white/10">
-                                                                COMING SOON ON STREAMING
-                                                            </div>
-                                                        )}
+                                                        {/* Stream Buttons */}
+                                                        <div className="mt-4 flex flex-col gap-2">
+                                                            {track.link_spotify && (
+                                                                <a
+                                                                    href={track.link_spotify}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="bg-[#1DB954] hover:bg-[#1ed760] text-black font-mono-raw font-black text-xs px-4 py-2.5 uppercase shadow-[3px_3px_0px_#000] inline-flex items-center justify-between w-full transition-all hover:-translate-y-0.5"
+                                                                >
+                                                                    <span className="flex items-center gap-2">
+                                                                        <SpotifyIcon className="w-4 h-4 fill-black" />
+                                                                        <span>LISTEN ON SPOTIFY</span>
+                                                                    </span>
+                                                                    <ArrowUpRight className="w-4 h-4 stroke-[3]" />
+                                                                </a>
+                                                            )}
+                                                            {track.link_apple_music && (
+                                                                <a
+                                                                    href={track.link_apple_music}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="bg-[#fa233b] hover:bg-[#fc3c44] text-white font-mono-raw font-black text-xs px-4 py-2.5 uppercase shadow-[3px_3px_0px_#000] inline-flex items-center justify-between w-full transition-all hover:-translate-y-0.5"
+                                                                >
+                                                                    <span className="flex items-center gap-2">
+                                                                        <AppleMusicIcon className="w-4 h-4 fill-white" />
+                                                                        <span>LISTEN ON APPLE MUSIC</span>
+                                                                    </span>
+                                                                    <ArrowUpRight className="w-4 h-4 stroke-[3]" />
+                                                                </a>
+                                                            )}
+                                                            {!track.link_spotify && !track.link_apple_music && (
+                                                                <div className="bg-white/10 text-[#a3a3a3] font-mono-raw text-xs px-4 py-2.5 uppercase text-center border border-white/10">
+                                                                    COMING SOON ON STREAMING
+                                                                </div>
+                                                            )}
+                                                        </div>
 
                                                         {/* Barcode Strip */}
                                                         <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between font-mono-raw text-[9px] text-white/40">
@@ -1516,14 +1615,14 @@ export default function LandingPage() {
                                                 const firstPart = words[0];
                                                 const secondPart = words.slice(1).join(' ');
                                                 return (
-                                                    <h2 className="font-marker text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[0.95] text-[#ff0055] drop-shadow-[4px_4px_0px_#ffea00] uppercase flex flex-col gap-1 sm:gap-2">
+                                                    <h2 className="font-grindy text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[0.95] text-[#ff0055] drop-shadow-[4px_4px_0px_#ffea00] uppercase flex flex-col gap-1 sm:gap-2">
                                                         <span>{firstPart}</span>
                                                         <span>{secondPart}</span>
                                                     </h2>
                                                 );
                                             }
                                             return (
-                                                <h2 className="font-marker text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[0.95] text-[#ff0055] drop-shadow-[4px_4px_0px_#ffea00] uppercase">
+                                                <h2 className="font-grindy text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[0.95] text-[#ff0055] drop-shadow-[4px_4px_0px_#ffea00] uppercase">
                                                     {name}
                                                 </h2>
                                             );

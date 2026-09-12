@@ -34,6 +34,16 @@ function SpotifyIcon({ className = "size-4" }: { className?: string }) {
     );
 }
 
+// ─── Apple Music Icon Component ───────────────────────────────────────────────
+
+function AppleMusicIcon({ className = "size-4" }: { className?: string }) {
+    return (
+        <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.07c.6-0.74 1.01-1.76.9-2.78-.87.04-1.92.58-2.54 1.31-.55.63-1.03 1.66-.9 2.67.97.08 1.96-.48 2.54-1.2z" />
+        </svg>
+    );
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type OriginalItem = {
@@ -41,6 +51,7 @@ type OriginalItem = {
     image_url: string | null;
     judul: string;
     link_spotify: string | null;
+    link_apple_music: string | null;
     active: boolean;
 };
 
@@ -172,6 +183,7 @@ function OriginalFormModal({ open, onClose, item }: OriginalFormProps) {
         image_remove: false as boolean,
         judul: item?.judul ?? '',
         link_spotify: item?.link_spotify ?? '',
+        link_apple_music: item?.link_apple_music ?? '',
         active: item?.active ?? true,
     });
 
@@ -409,6 +421,22 @@ function OriginalFormModal({ open, onClose, item }: OriginalFormProps) {
                         <InputError message={errors.link_spotify} />
                     </div>
 
+                    {/* Link Apple Music */}
+                    <div className="space-y-2">
+                        <Label htmlFor="original-apple-music" className="flex items-center gap-1.5">
+                            <AppleMusicIcon className="size-3.5 text-rose-500" />
+                            Link Apple Music
+                        </Label>
+                        <Input
+                            id="original-apple-music"
+                            value={data.link_apple_music}
+                            onChange={(e) => setData('link_apple_music', e.target.value)}
+                            placeholder="https://music.apple.com/..."
+                            autoComplete="off"
+                        />
+                        <InputError message={errors.link_apple_music} />
+                    </div>
+
                     {/* Active */}
                     <div className="flex items-center justify-between rounded-xl border border-sidebar-border/70 bg-muted/20 px-4 py-3">
                         <div>
@@ -575,6 +603,7 @@ export default function Originals({ originals }: PageProps) {
                                     <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground w-24">Gambar</th>
                                     <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Judul Lagu</th>
                                     <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Link Spotify</th>
+                                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Link Apple Music</th>
                                     <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground w-24">Active</th>
                                     <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground w-28">Aksi</th>
                                 </tr>
@@ -582,7 +611,7 @@ export default function Originals({ originals }: PageProps) {
                             <tbody className="divide-y divide-sidebar-border/30">
                                 {originals.length === 0 ? (
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-16 text-center">
+                                        <td colSpan={7} className="px-6 py-16 text-center">
                                             <div className="flex flex-col items-center gap-3">
                                                 <div className="flex size-14 items-center justify-center rounded-2xl bg-muted/50">
                                                     <Music className="size-7 text-muted-foreground/50" />
@@ -638,6 +667,23 @@ export default function Originals({ originals }: PageProps) {
                                                     >
                                                         <SpotifyIcon className="size-3" />
                                                         Spotify
+                                                    </a>
+                                                ) : (
+                                                    <span className="text-xs text-muted-foreground/50">—</span>
+                                                )}
+                                            </td>
+
+                                            {/* Link Apple Music */}
+                                            <td className="px-6 py-4">
+                                                {item.link_apple_music ? (
+                                                    <a
+                                                        href={item.link_apple_music}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-medium text-rose-600 transition-colors hover:bg-rose-100 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
+                                                    >
+                                                        <AppleMusicIcon className="size-3" />
+                                                        Apple Music
                                                     </a>
                                                 ) : (
                                                     <span className="text-xs text-muted-foreground/50">—</span>

@@ -8,6 +8,8 @@ use App\Models\HeroSlide;
 use App\Models\Original;
 use App\Models\Personel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -54,12 +56,37 @@ class HandleInertiaRequests extends Middleware
             'posisi'    => $p->posisi,
             'image_url' => $p->image_url,
         ]);
-        $originals = Original::where('active', true)->latest()->get()->map(fn ($o) => [
-            'id'           => $o->id,
-            'judul'        => $o->judul,
-            'image_url'    => $o->image_url,
-            'link_spotify' => $o->link_spotify,
-        ]);
+        $originals = Original::where('active', true)->latest()->get()->map(function ($o) {
+            $spotifyArtwork = null;
+            if ($o->link_spotify) {
+                $cacheKey = 'spotify_art_' . md5($o->link_spotify);
+                $spotifyArtwork = Cache::remember($cacheKey, 86400 * 7, function () use ($o) {
+                    try {
+                        $res = Http::timeout(2)->get('https://open.spotify.com/oembed', [
+                            'url' => $o->link_spotify,
+                        ]);
+                        if ($res->successful()) {
+                            $thumb = $res->json('thumbnail_url');
+                            if ($thumb) {
+                                return str_replace('ab67616d00001e02', 'ab67616d0000b273', $thumb);
+                            }
+                        }
+                    } catch (\Throwable $e) {
+                        return null;
+                    }
+                    return null;
+                });
+            }
+
+            return [
+                'id'                  => $o->id,
+                'judul'               => $o->judul,
+                'image_url'           => $o->image_url,
+                'spotify_artwork_url' => $spotifyArtwork,
+                'link_spotify'        => $o->link_spotify,
+                'link_apple_music'    => $o->link_apple_music,
+            ];
+        });
 
         return [
             ...parent::share($request),
