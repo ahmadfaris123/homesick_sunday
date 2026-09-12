@@ -549,6 +549,10 @@ export default function LandingPage() {
                                     <ArrowUpRight className="w-3.5 h-3.5" />
                                 </a>
                             )}
+                            <a href="#subscribe" className="bg-[#ff0055] hover:bg-[#ffea00] text-white hover:text-black px-3.5 py-1.5 shadow-[2px_2px_0px_#fff] transition-all -rotate-1 hover:rotate-0 inline-flex items-center gap-1.5 nav-link">
+                                <span>Contact</span>
+                                <svg className="w-3.5 h-3.5 stroke-[2.5]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+                            </a>
                         </nav>
                     </div>
                 </header>
