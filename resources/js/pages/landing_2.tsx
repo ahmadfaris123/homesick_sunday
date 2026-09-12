@@ -187,7 +187,7 @@ export default function LandingPage() {
 
     // Personel Slider State (from personel table)
     const memberList = personel && personel.length > 0 ? personel : [];
-    const personelItemsPerView = windowWidth < 640 ? 1 : windowWidth < 1024 ? 2 : 3;
+    const personelItemsPerView = windowWidth < 640 ? 1 : windowWidth < 1024 ? 2 : 4;
     const [personelIndex, setPersonelIndex] = useState(0);
     const personelMaxIndex = Math.max(0, memberList.length - personelItemsPerView);
 
@@ -417,13 +417,13 @@ export default function LandingPage() {
                 {/* NAVBAR */}
                 {/* ========================================================================= */}
                 <header className="border-b border-white/10 backdrop-blur-md bg-[#0a0a0a]/85 sticky top-0 z-50">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-center md:justify-between">
                         {/* Minimalist Logo */}
                         <div 
                             onClick={() => scrollTo('hero')}
-                            className="flex items-center gap-3 group cursor-pointer"
+                            className="flex items-center justify-center gap-3 group cursor-pointer text-center"
                         >
-                            <div className="relative">
+                            <div className="relative text-center">
                                 <span className="font-marker text-3xl sm:text-4xl text-[#ffea00] tracking-widest drop-shadow-[2px_2px_0px_#ffffff] transition-transform group-hover:scale-105 inline-block mr-3 sm:mr-4">
                                     Homesick
                                 </span>
@@ -1160,8 +1160,8 @@ export default function LandingPage() {
                                 <div
                                     className="flex"
                                     style={{
-                                        gap: '24px',
-                                        transform: `translateX(calc(-${personelIndex} * (100% + 24px) / ${personelItemsPerView}))`,
+                                        gap: '20px',
+                                        transform: `translateX(calc(-${personelIndex} * (100% + 20px) / ${personelItemsPerView}))`,
                                         transition: 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                                     }}
                                 >
@@ -1170,8 +1170,8 @@ export default function LandingPage() {
                                             key={member.id}
                                             className={`shrink-0 fade-up delay-${Math.min(idx + 1, 3)} ${personelInView ? 'visible' : ''}`}
                                             style={{
-                                                width: `calc((100% - (${personelItemsPerView} - 1) * 24px) / ${personelItemsPerView})`,
-                                                minWidth: `calc((100% - (${personelItemsPerView} - 1) * 24px) / ${personelItemsPerView})`,
+                                                width: `calc((100% - (${personelItemsPerView} - 1) * 20px) / ${personelItemsPerView})`,
+                                                minWidth: `calc((100% - (${personelItemsPerView} - 1) * 20px) / ${personelItemsPerView})`,
                                             }}
                                         >
                                             <div className="bg-black/95 border-2 border-white/20 hover:border-[#ffea00] relative flex flex-col justify-between h-full shadow-[8px_8px_0px_#ff0055] hover:shadow-[10px_10px_0px_#ffea00] transition-all duration-300 group overflow-hidden">
@@ -1181,16 +1181,16 @@ export default function LandingPage() {
                                                 <div className="tape-strip absolute -bottom-3 -right-5 w-24 h-6 rotate-6 z-30 pointer-events-none" />
 
                                                 {/* Card Header Tag */}
-                                                <div className="p-5 pb-3 flex justify-between items-start border-b border-white/10 z-20 bg-neutral-950/70">
-                                                    <div>
+                                                <div className="p-4 sm:p-5 pb-3 flex justify-between items-start gap-2 border-b border-white/10 z-20 bg-neutral-950/70">
+                                                    <div className="min-w-0">
                                                         <span className="font-mono-raw text-xs text-[#a3a3a3] uppercase tracking-wider block">
                                                             ROSTER // 0{idx + 1}
                                                         </span>
-                                                        <h3 className="font-marker text-3xl sm:text-4xl text-white mt-1 group-hover:text-[#ffea00] transition-colors uppercase leading-none drop-shadow-[2px_2px_0px_#000]">
+                                                        <h3 className="font-marker text-2xl sm:text-3xl text-white mt-1 group-hover:text-[#ffea00] transition-colors uppercase leading-none drop-shadow-[2px_2px_0px_#000] truncate">
                                                             {member.nama}
                                                         </h3>
                                                     </div>
-                                                    <div className="bg-[#ffea00] text-black font-mono-raw font-black text-xs px-2.5 py-1 -rotate-2 shadow-[2px_2px_0px_#ff0055] uppercase">
+                                                    <div className="bg-[#ffea00] text-black font-mono-raw font-black text-xs px-2.5 py-1 -rotate-2 shadow-[2px_2px_0px_#ff0055] uppercase shrink-0">
                                                         {member.posisi}
                                                     </div>
                                                 </div>
@@ -1225,7 +1225,7 @@ export default function LandingPage() {
                                                 </div>
 
                                                 {/* Bottom Card Footer */}
-                                                <div className="p-5 pt-4 bg-neutral-950/80 border-t border-white/10 z-20">
+                                                <div className="p-4 sm:p-5 pt-4 bg-neutral-950/80 border-t border-white/10 z-20">
                                                     <div className="flex items-center justify-between font-mono-raw text-xs text-[#a3a3a3]">
                                                         <div className="flex items-center gap-1.5 text-white">
                                                             <Zap className="w-3.5 h-3.5 fill-[#ffea00] text-[#ffea00]" />
