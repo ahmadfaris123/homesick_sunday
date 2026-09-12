@@ -758,9 +758,9 @@ export default function LandingPage() {
                                         </div>
 
                                         {/* Sticker 4: Acidic Oval Pill "RIOT NOISE" */}
-                                        <div className="absolute top-1/2 -left-6 sm:-left-12 bg-[#ffea00] text-black font-marker text-sm sm:text-base px-4 py-1.5 rounded-full border-2 border-black -rotate-6 shadow-[3px_3px_0px_#000] z-20 hover:rotate-3 transition-transform cursor-pointer">
+                                        {/* <div className="absolute top-1/2 -left-6 sm:-left-12 bg-[#ffea00] text-black font-marker text-sm sm:text-base px-4 py-1.5 rounded-full border-2 border-black -rotate-6 shadow-[3px_3px_0px_#000] z-20 hover:rotate-3 transition-transform cursor-pointer">
                                             ⚡ RIOT NOISE
-                                        </div>
+                                        </div> */}
 
                                         {/* Sticker 5: Warning Tape Barcode Sticker */}
                                         <div className="absolute -bottom-4 -right-4 sm:-right-8 bg-white text-black font-mono-raw text-[10px] px-3 py-1 border border-black rotate-3 shadow-[2px_2px_0px_#000] z-30">
@@ -1028,7 +1028,7 @@ export default function LandingPage() {
                                                 <img
                                                     src={videoThumbnail}
                                                     alt="Latest video thumbnail"
-                                                    className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 filter"
+                                                    className="absolute inset-0 w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 filter"
                                                     onError={(e) => {
                                                         if (ytId) {
                                                             (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
@@ -1038,7 +1038,7 @@ export default function LandingPage() {
                                                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
 
                                                 {/* Pulsing Play Button */}
-                                                <div className="relative z-10 flex flex-col items-center justify-center gap-4">
+                                                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-10 pointer-events-none">
                                                     <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#ff0055] text-white flex items-center justify-center border-4 border-black shadow-[0_0_35px_#ff0055] group-hover:bg-[#ffea00] group-hover:text-black group-hover:scale-110 transition-all">
                                                         <span className="font-marker text-3xl sm:text-4xl ml-1.5">▶</span>
                                                     </div>
