@@ -13,7 +13,7 @@ class AppSettingSeeder extends Seeder
     public function run(): void
     {
         AppSetting::firstOrCreate([], [
-            'app_name'      => config('app.name', 'My Application'),
+            'app_name'      => config('app.name', 'Homesick Sunday'),
             'email'         => null,
             'phone_number'  => null,
             'instagram_url' => null,
