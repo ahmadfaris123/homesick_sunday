@@ -5,10 +5,13 @@ use App\Http\Controllers\AppSettingController;
 use App\Http\Controllers\HeroController;
 use App\Http\Controllers\OriginalController;
 use App\Http\Controllers\PersonelController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'landing_2')->name('home');
 Route::inertia('/landing_2', 'landing_backup')->name('landing-2');
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
@@ -25,4 +28,3 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__.'/settings.php';
-

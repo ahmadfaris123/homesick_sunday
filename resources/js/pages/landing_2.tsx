@@ -311,6 +311,32 @@ export default function LandingPage() {
                     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Montserrat:wght@700;800;900&family=Permanent+Marker&family=Sedgwick+Ave&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" 
                     rel="stylesheet" 
                 />
+
+                {/* SEO Meta Tags */}
+                <meta name="description" content="Homesick Sunday adalah band pop punk asal Yogyakarta. Dengarkan single terbaru 'Merayakan Luka' di Spotify dan Apple Music." />
+                <meta name="keywords" content="Homesick Sunday, Pop Punk, Yogyakarta, Musik Indonesia, Band Indie, Merayakan Luka" />
+                <meta name="author" content="Homesick Sunday" />
+                
+                {/* Open Graph / Facebook / WhatsApp */}
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content="https://www.homesicksunday.com/" />
+                <meta property="og:title" content="Homesick Sunday - Official Website" />
+                <meta property="og:description" content="Homesick Sunday adalah band pop punk asal Yogyakarta. Dengarkan single terbaru 'Merayakan Luka'." />
+                <meta property="og:image" content="/assets/poster/home.jpg" />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
+                <meta property="og:locale" content="id_ID" />
+
+                {/* Twitter */}
+                <meta property="twitter:card" content="summary_large_image" />
+                <meta property="twitter:url" content="https://www.homesicksunday.com/" />
+                <meta property="twitter:title" content="Homesick Sunday - Official Website" />
+                <meta property="twitter:description" content="Homesick Sunday adalah band pop punk asal Yogyakarta." />
+                <meta property="twitter:image" content="/assets/poster/home.jpg" />
+
+                {/* Canonical & Sitemap */}
+                <link rel="canonical" href="https://www.homesicksunday.com/" />
+                <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
             </Head>
 
             {/* Custom Embedded Styles for Grunge Y2K Effects */}

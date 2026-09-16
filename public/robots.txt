@@ -1,2 +1,17 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Disallow admin & auth routes
+Disallow: /dashboard
+Disallow: /hero
+Disallow: /about
+Disallow: /personel
+Disallow: /originals
+Disallow: /app-settings
+Disallow: /settings
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+
+Sitemap: https://www.homesicksunday.com/sitemap.xml
