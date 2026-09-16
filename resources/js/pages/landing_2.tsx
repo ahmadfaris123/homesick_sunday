@@ -322,7 +322,7 @@ export default function LandingPage() {
                 <meta property="og:url" content="https://www.homesicksunday.com/" />
                 <meta property="og:title" content="Homesick Sunday - Official Website" />
                 <meta property="og:description" content="Homesick Sunday adalah band pop punk asal Yogyakarta. Dengarkan single terbaru 'Merayakan Luka'." />
-                <meta property="og:image" content="/assets/poster/home.jpg" />
+                <meta property="og:image" content="https://www.homesicksunday.com/assets/poster/home.jpg" />
                 <meta property="og:image:width" content="1200" />
                 <meta property="og:image:height" content="630" />
                 <meta property="og:locale" content="id_ID" />
@@ -332,7 +332,7 @@ export default function LandingPage() {
                 <meta property="twitter:url" content="https://www.homesicksunday.com/" />
                 <meta property="twitter:title" content="Homesick Sunday - Official Website" />
                 <meta property="twitter:description" content="Homesick Sunday adalah band pop punk asal Yogyakarta." />
-                <meta property="twitter:image" content="/assets/poster/home.jpg" />
+                <meta property="twitter:image" content="https://www.homesicksunday.com/assets/poster/home.jpg" />
 
                 {/* Canonical & Sitemap */}
                 <link rel="canonical" href="https://www.homesicksunday.com/" />
@@ -577,7 +577,7 @@ export default function LandingPage() {
                             )}
                             <a href="#subscribe" className="bg-[#ff0055] hover:bg-[#ffea00] text-white hover:text-black px-3.5 py-1.5 shadow-[2px_2px_0px_#fff] transition-all -rotate-1 hover:rotate-0 inline-flex items-center gap-1.5 nav-link">
                                 <span>Contact</span>
-                                <svg className="w-3.5 h-3.5 stroke-[2.5]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+                                <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
                             </a>
                         </nav>
                     </div>
@@ -1086,7 +1086,7 @@ export default function LandingPage() {
                     {(() => {
                         const videoUrl = appSettings?.latest_video_url || appSettings?.youtube_url;
                         const ytId = extractYoutubeId(videoUrl);
-                        const videoThumbnail = ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : (latestOriginal?.image_url || '/assets/framer/4Vs7smbTCJW7vqlJnZ9xvk5Tse8.webp');
+                        const videoThumbnail = ytId ? `https://i.ytimg.com/vi/${ytId}/maxresdefault.jpg` : (latestOriginal?.image_url || '/assets/framer/4Vs7smbTCJW7vqlJnZ9xvk5Tse8.webp');
 
                         return (
                             <section id="reel" ref={reelRef} className="relative py-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto scroll-mt-24">
@@ -1118,13 +1118,15 @@ export default function LandingPage() {
                                     {/* Video Screen Container */}
                                     <div className="relative w-full aspect-video bg-black border-4 border-black shadow-2xl overflow-hidden group">
                                         {isPlayingVideo && ytId ? (
-                                            <iframe
-                                                src={`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`}
-                                                title="Homesick Sunday Latest Video"
-                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                allowFullScreen
-                                                className="w-full h-full object-cover border-0"
-                                            />
+                                             <iframe
+                                                 src={`https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0`}
+                                                 title="Homesick Sunday Latest Video"
+                                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                 referrerPolicy="strict-origin-when-cross-origin"
+                                                 allowFullScreen
+                                                 loading="lazy"
+                                                 className="w-full h-full object-cover border-0"
+                                             />
                                         ) : (
                                             <div 
                                                 onClick={() => {
@@ -1140,10 +1142,13 @@ export default function LandingPage() {
                                                 <img
                                                     src={videoThumbnail}
                                                     alt="Latest video thumbnail"
+                                                    crossOrigin="anonymous"
+                                                    loading="lazy"
+                                                    decoding="async"
                                                     className="absolute inset-0 w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 filter"
                                                     onError={(e) => {
                                                         if (ytId) {
-                                                            (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+                                                            (e.target as HTMLImageElement).src = `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
                                                         }
                                                     }}
                                                 />
