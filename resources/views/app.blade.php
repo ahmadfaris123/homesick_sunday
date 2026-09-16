@@ -48,7 +48,10 @@
         @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
         <x-inertia::head>
-            <title>{{ config('app.name', 'Laravel') }}</title>
+            <title>{{ config('app.name', 'Homesick Sunday') }}</title>
+            <meta name="description" content="Homesick Sunday adalah band pop punk asal Yogyakarta. Dengarkan single terbaru 'Merayakan Luka' di Spotify dan Apple Music.">
+            <meta name="keywords" content="Homesick Sunday, Pop Punk, Yogyakarta, Musik Indonesia, Band Indie, Merayakan Luka">
+            <meta name="author" content="Homesick Sunday">
         </x-inertia::head>
     </head>
     <body class="font-sans antialiased">

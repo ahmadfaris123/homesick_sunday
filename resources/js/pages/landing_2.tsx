@@ -341,18 +341,8 @@ export default function LandingPage() {
 
             {/* Custom Embedded Styles for Grunge Y2K Effects */}
             <style dangerouslySetInnerHTML={{ __html: `
-                @font-face {
-                    font-family: 'Grindy Brush';
-                    src: url('/assets/Grindy%20Brush.otf') format('opentype');
-                    font-display: swap;
-                }
                 .font-grindy {
                     font-family: 'Grindy Brush', cursive, sans-serif;
-                }
-                @font-face {
-                    font-family: 'Airone';
-                    src: url('/assets/AironeFont-Demo.otf') format('opentype');
-                    font-display: swap;
                 }
                 .font-airone {
                     font-family: 'Airone', cursive, sans-serif;
